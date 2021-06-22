@@ -62,6 +62,7 @@ def main():
     next_token = ""
     break_flag = False
     df = pd.DataFrame()
+    df_split = pd.DataFrame()
     count=0
     # 次ページがなくなるまで次ページのクエリを取得
     while True:
@@ -99,19 +100,24 @@ def main():
             data =  json_response["data"]
             data2 =  json_response["meta"]
 
-            df1 = pd.DataFrame(shape_data(data))           
+            df1 = pd.DataFrame(shape_data(data))
+            df_split = pd.concat([df_split, df1])
+
             df = pd.concat([df, df1])
 
             request_iterator += 1
             time.sleep(2)#App rate limit: 1 request per second
 
             if count!=0 and count%1000==0:#Excel用
-                df.to_csv("result_{}.csv".format(count*500),encoding="cp932",header=False, index=False)
-
+                df_split.to_csv("result_{}.csv".format(count*500),encoding="cp932",header=False, index=False)
+                df_split = pd.DataFrame()
+                print("1000回リクエスト")
             if request_iterator >= 300: # 300requestを超えたら止める
                 print("App rate limit: 300 requests per 15-minute window")
                 time.sleep(16.00*60) #App rate limit: 300 requests per 15-minute window
                 request_iterator = 0
+
+            print("{}回目".format(count))
             count+=1
     print(str(count)+ "回リクエストしました")
     df.to_csv("result.csv",encoding="cp932",header=False, index=False)
