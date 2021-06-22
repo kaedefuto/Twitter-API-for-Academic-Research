@@ -112,6 +112,7 @@ def main():
                 df_split.to_csv("result_{}.csv".format(count*500),encoding="cp932",header=False, index=False)
                 df_split = pd.DataFrame()
                 print("1000回リクエスト")
+                
             if request_iterator >= 300: # 300requestを超えたら止める
                 print("App rate limit: 300 requests per 15-minute window")
                 time.sleep(16.00*60) #App rate limit: 300 requests per 15-minute window
